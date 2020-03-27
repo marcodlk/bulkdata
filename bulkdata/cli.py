@@ -6,9 +6,7 @@ import click
 @click.command()
 def main(args=None):
     """Console script for bulkdata."""
-    click.echo("Replace this message by putting your code into "
-               "bulkdata.cli.main")
-    click.echo("See click documentation at https://click.palletsprojects.com/")
+    click.echo("CLI not available yet...")
     return 0
 
 
