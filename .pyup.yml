@@ -26,9 +26,9 @@ search: True
 # default: empty
 # allowed: list
 requirements:
-  - requirements/install.txt:
+  - requirements.txt:
     update: insecure
-  - requirements/dev.txt:
+  - requirements_dev.txt:
     update: False
 
 # add a label to pull requests, default is not set
