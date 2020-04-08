@@ -237,7 +237,6 @@ def test_load_card_modify(fields, card_str):
     card[3::2] = [3, 4, 5]
     card[4::2] = [1.1, 2.2, 3.3]
 
-    print(card.dumps())
     modified_card_str = """\
 GOODBYE 100     she     planet  3       1.1     4       2.2     5       +0      
 +0      3.3
@@ -259,7 +258,6 @@ def test_card_get_long_string():
     got_string = card.get_long(slice(0, None, 1))
     assert got_string == long_string
 
-    print(card.fields)
     index = list(range(8))
     got_string = card.get_long(index)
     assert got_string == long_string

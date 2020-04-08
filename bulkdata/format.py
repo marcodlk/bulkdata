@@ -73,51 +73,6 @@ class BaseFormat(BulkDataFormat):
             raise ValueError("Integer field value has too many digits: {}".format(value))
         return field
 
-    # def _format_real(self, value, align, width):
-    #     """Convert real number to formatted field string.
-    #     Adapted from: https://stackoverflow.com/questions/22989372/how-to-format-a-floating-number-to-maximum-fixed-width-in-p
-    #     """
-
-    #     maxnum = int('9'*(width - 1))  # 9999999
-    #     minnum = -int('9'*(width - 2)) # -999999
-
-    #     # for small numbers
-    #     if value > minnum and value < maxnum:
-
-    #         field = "{:{}{}.{}}".format(value, align, width, width)
-    #         field = field.rstrip("0") # strip trailing zeros
-
-    #         # float longer than 8 will need rounding to fit width
-    #         if len(field) > width:
-    #             field = str(round(value, width-1 - str(value).index('.')))
-    #             field = field.rstrip("0") # strip trailing zeros
-                
-    #         elif len(field) < width:
-    #             field = "{:{}{}.{}}".format(field, align, width, width)
-                    
-    #         if len(field) != width:
-    #             raise Exception("Conversion of \"small\" real number: {} "
-    #                             "failed: {}, length: {}".format(value, field, len(field)))
-    #     else:
-
-    #         # for exponents
-    #         # added a loop for super large numbers or negative as "-" is another char
-    #         # Added max(max_char, 4) to account for max length of less 
-    #         #     than 5, was having too much fun (4 -> (5 - 1) to account for removal of 'e')
-    #         # TODO can i come up with a threshold value for these up front, 
-    #         #     so that i dont have to do this calc for every value??
-    #         for n in range(max(width, 4) - 4, 0, -1):
-    #             fill = "{}.{}e".format(align, n)
-    #             field = "{:{}}".format(value, fill).replace("+0", "+").replace("e", "")
-
-    #             # if all good stop looping
-    #             if len(field) == width:
-    #                 break
-    #         else:
-    #             raise ValueError("Number is too large to fit in {} characters: {}".format(width, value))
-
-    #     return field
-
     def _format_real(self, value, align, width):
         if width == 8:
             field = "{:{}{}}".format(print_float_8(value).strip(), align, width) # TODO: clean this up
@@ -211,8 +166,8 @@ class BaseFormat(BulkDataFormat):
     def _is_match(self, rx, field):
         field = field.strip()
         try:
-            return rx.match(field)[0] == field
-        except (TypeError, IndexError):
+            return rx.match(field).group(0) == field
+        except (TypeError, IndexError, AttributeError):
             return False
 
     def is_integer_field(self, field):
@@ -299,12 +254,6 @@ class BaseFormat(BulkDataFormat):
 
     def read_card(self, card_str):
 
-        # lines = card_str.split("\n")
-        # lines_iter = iter(lines)
-
-        # head, fields = self.next_card_fields(lines_iter)
-
-        # return head, fields
         return BDFParser(card_str).parse_card()
 
     def split_header(self, deck_str):
@@ -331,33 +280,9 @@ class BaseFormat(BulkDataFormat):
 
     def read_deck(self, deck_str):
 
-        # # skip and keep header (up to BEGIN BULK)
-        # header, deck_str = self.split_header(deck_str)
-
-        # # ignore ENDDATA and anything after
-        # deck_str = self.ignore_enddata(deck_str)
-        
-        # lines = deck_str.split("\n")
-        # lines_iter = iter(lines)
-        
-        # cards = []
-  
-        # while lines_iter:
-        #     try:
-        #         head, fields = self.next_card_fields(lines_iter)
-        #     except ValueError:
-        #         # empty line
-        #         continue
-        #     except StopIteration:
-        #         break
-
-        #     cards.append((head, fields))
-            
-        # return header, cards
         header, cards = BDFParser(deck_str).parse()
-        print(header, cards)
-        return header, cards
 
+        return header, cards
 
 
 class FixedFormat(BaseFormat):
