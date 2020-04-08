@@ -36,8 +36,6 @@ Todo
 ----
 
 * Add support for BDF files containing INCLUDE statements.
-* Add support for BDF files with mixed formatting.
-* Add support for blank continuation.
 
 Credits
 -------
