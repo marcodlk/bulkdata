@@ -3,7 +3,9 @@ from collections.abc import Sequence
 
 from .abc import BulkDataCard
 from .format import DefaultFormat
-from .util import islist
+from .util import islist, split_fields
+from .writer import write_field
+from .reader import read_field
 
 
 class RawCard(BulkDataCard):
@@ -88,10 +90,10 @@ class Card(BulkDataCard):
 
     def _convert_to_fields(self, value, fieldspan=1):
         if fieldspan == 1:
-            return [self._format.write_field(value).strip()]
+            return [write_field(value).strip()]
         elif fieldspan > 1:
-            longfield = self._format.write_field(value, fieldspan=fieldspan)
-            return [field.strip() for field in self._format.split(longfield)]
+            longfield = write_field(value, fieldspan=fieldspan)
+            return [field.strip() for field in split_fields(longfield)]
         else:
             raise ValueError("fieldspan < 1")
 
@@ -99,7 +101,7 @@ class Card(BulkDataCard):
         self._raw.fields = fields
 
     def reformat(self, new_format):
-        field_values = [self._format.read_field(field)
+        field_values = [read_field(field)
                         for field in self.fields]
         self.resize(0)
         self._format = new_format
@@ -111,8 +113,7 @@ class Card(BulkDataCard):
 
     def extend(self, values, fieldspan=1):
         if fieldspan == 1:
-            fields = [self._format.write_field(value).strip()
-                      for value in values]
+            fields = [write_field(value).strip() for value in values]
             self._raw.extend(fields)
         else:
             for value in values:
@@ -128,7 +129,7 @@ class Card(BulkDataCard):
         self._raw.strip()
         
     def _setsinglefield(self, index, value):
-        self._raw[index] = self._format.write_field(value).strip()
+        self._raw[index] = write_field(value).strip()
         
     def _setmultifieldlist(self, indexs, values):
         numindexs = len(indexs)
@@ -178,12 +179,12 @@ class Card(BulkDataCard):
 
     def _getsinglefield(self, key):
         field = self._raw.__getitem__(key)
-        return self._format.read_field(field)
+        return read_field(field)
 
     def _getmultifield(self, key):
         fields = self._raw.__getitem__(key)
         return [
-            self._format.read_field(field)
+            read_field(field)
             for field in fields
         ]
 
@@ -203,7 +204,7 @@ class Card(BulkDataCard):
         elif islist(key) or isinstance(key, slice):
             fields = self._raw.__getitem__(key)
             longfield = "".join(fields)
-            return self._format.read_field(longfield)
+            return read_field(longfield)
         else:
             raise TypeError(key, type(key))
             
@@ -221,11 +222,19 @@ class Card(BulkDataCard):
         obj._raw.extend(card_fields)
         
         return obj
+
+    def normalize_value(self, value):
+        if isinstance(value, str):
+            return value.strip()
+        elif isinstance(value, Sequence):
+            return [self.normalize_value(each) for each in value]
+        else:
+            return write_field(value).strip()
     
     def __contains__(self, value):
         # normalize value and field values to be comparable
-        normal_value = self._format.normalize(value)
-        normal_fields = self._format.normalize(self._raw.fields)
+        normal_value = self.normalize_value(value)
+        normal_fields = self.normalize_value(self._raw.fields)
         return normal_fields.__contains__(normal_value)
     
     def __str__(self):
