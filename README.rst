@@ -20,7 +20,8 @@ Bulk Data Python Package
 
 
 
-Bulk Data Python Package makes it easy to create and manipulate bulk data files.
+Bulk Data Python Package makes it easy to create and manipulate bulk 
+data files.
 
 
 * Free software: MIT license
@@ -30,12 +31,105 @@ Bulk Data Python Package makes it easy to create and manipulate bulk data files.
 Features
 --------
 
-* TODO
+* ``Card`` objects represent Bulk Data Cards; functionally similar to 
+  ``list`` objects but can be serialized to a bulk data formatted string
+  representing the card.
 
-Todo
+* No explicit Bulk Data Card definitions are necessary beforehand.
+
+* ``Deck`` objects represent a Bulk Data "Deck" containing Bulk Data Cards
+  that can be added, edited, or deleted.
+
+* Loading BDF files containing mixed formatting is supported.
+
+* Bulk Data Formats currently supported:
+   * Fixed (same as Small in NASTRAN)
+   * Free
+
+
+Example
+-------
+
+.. code-block:: python
+
+    from bulkdata import Deck, Card
+
+    bdf_filename = BDF_DIR + "/example.bdf"
+
+    # load Deck from BDF file
+    with open(bdf_filename) as bdf_file:
+        deck = Deck.load(bdf_file)
+
+    # CORD2R variables
+    cid = 1
+    rid = None
+    a = [-2.9, 1.0, 0.0]
+    b = [3.6, 0.0, 1.0]
+    c = [5.2, 1.0, -2.9]
+
+    # create CORD2R card
+    cord2r = Card("CORD2R")
+    cord2r.append(cid)
+    cord2r.append(rid)
+    cord2r.extend(a)
+    cord2r.extend(b)
+    cord2r.extend(c)
+
+    # print the CORD2R card in fixed format (the default)
+    print("-- CORD2R fixed formatting --")
+    print(cord2r.dumps("fixed"))
+
+    # print the CORD2R card in free format
+    print("-- CORD2R free formatting --")
+    print(cord2r.dumps("free"))
+
+    # add card to the deck
+    deck.append(cord2r)
+
+    # get AEROZ card
+    aeroz = deck.find_one({"name": "AEROZ"})
+
+    print("-- AEROZ before update --")
+    print(aeroz.dumps())
+
+    # update the ACSID field (first one)
+    aeroz[0] = cid
+
+    # update mass and length units fields while we're at it
+    aeroz[[3, 4]] = ["N", "M"] 
+
+    print("-- AEROZ after update --")
+    print(aeroz.dumps())
+
+    # dump Deck to update BDF file
+    with open(bdf_filename, "w") as f:
+        deck.dump(f)
+
+Output::
+   
+   -- CORD2R fixed formatting --
+   CORD2R  1               -2.9    1.      0.      3.6     0.      1.      +0      
+   +0      5.2     1.      -2.9
+   
+   -- CORD2R free formatting --
+   CORD2R,1, ,-2.9,1.,0.,3.6,0.,1.,+0
+   +0,5.2,1.,-2.9
+   
+   -- AEROZ before update --
+   AEROZ           YES     NO      SLIN    IN      400.    300     12000.  +0      
+   +0      10.     0.      0.
+   
+   -- AEROZ after update --
+   AEROZ   1       YES     NO      N       M       400.    300     12000.  +0      
+   +0      10.     0.      0.
+
+
+TODO
 ----
 
 * Add support for BDF files containing INCLUDE statements.
+* Add support for Large Field entries
+* Add support for BDF files with tabs?
 
 Credits
 -------

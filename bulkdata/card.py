@@ -9,7 +9,7 @@ from .util import islist, split_fields, repr_list
 class Card:
     
     def __init__(self, name=None, size=0):
-        self._name = name
+        self.name = name
         self._fields = [Field(None) for _ in range(size)]
 
     def _convert_to_fields(self, value, fieldspan=1):
@@ -172,6 +172,8 @@ class Card:
     
     @name.setter
     def name(self, new_name):
+        if new_name:
+            new_name = new_name.strip()
         self._name = new_name
     
     @property

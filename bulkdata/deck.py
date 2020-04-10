@@ -191,9 +191,9 @@ class Deck():
             cards.append(card)
         obj = cls(cards, header)
 
-        # if obj.find_one({"name": None}):
-        #     raise Warning("Loaded cards with no name. This usually "
-        #                   "implies there was an error parsing the bdf file.")
+        if obj.find_one({"name": None}):
+            raise Warning("Loaded cards with no name. This usually "
+                          "implies there was an error parsing the bdf file.")
         
         return obj
 
@@ -203,7 +203,10 @@ class Deck():
 
     def dumps(self, format=None):
         bulk = "".join([card.dumps(format) for card in self.cards])
-        return self.header + "\nBEGIN BULK\n" + bulk + "ENDDATA"
+        if self.header:
+            return self.header + "\nBEGIN BULK\n" + bulk + "ENDDATA"
+        else:
+            return bulk
 
     def dump(self, fp, format=None):
         return fp.write(self.dumps(format=format))

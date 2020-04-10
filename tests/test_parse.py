@@ -9,7 +9,7 @@ from bulkdata.parse import BDFParser
 from . import BDF_DIR, EXPECT_DIR
 
 
-def test_parse_card():
+def test_parse_card_simple():
 
     card_str = """\
 $
@@ -23,6 +23,18 @@ $
     name, fields = BDFParser(card_str).parse_card()
     assert name.strip() == "HELLO"
     assert len(fields) == 9
+
+
+def test_parse_card_mixedcont():
+    
+    card_str = """\
+BARL    6666    10              BAR
++       5.5     3.0
+"""
+
+    name, fields = BDFParser(card_str).parse_card()
+    assert name.strip() == "BARL"
+    assert len(fields) == 10
 
 
 def test_parse_card_sparse():
@@ -133,4 +145,4 @@ def test_parse_bdf_pyNastran():
     header, card_tuples = BDFParser(bdf_str).parse()
 
     assert header == expect_header
-    assert len(card_tuples) == 158
+    assert len(card_tuples) == 143

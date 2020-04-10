@@ -11,27 +11,15 @@ class BDFParser:
     FIELDSPERBODY = 8
     
     def __init__(self, bdf_str):
+        # bdf_str = self.expand_tabs(bdf_str)
         self.bds = self.ignore_enddata(bdf_str)
         self.lines = self.bds.split("\n")
         self.remove_comments()
         self.line_idx = 0
-        # self.header = ""
         self.cards = []
-        
-    # def previous_line(self, i=1):
-    #     if self.line_idx == 0:
-    #         return None
-    #     else:
-    #         return self.lines[self.line_idx - i]
         
     def current_line(self):
         return self.lines[self.line_idx]
-        
-    # def next_line(self, i=1):
-    #     if self.line_idx == len(self.lines):
-    #         return None
-    #     else:
-    #         return self.lines[self.line_idx + i]
     
     def increment_line(self, i=1):
         self.line_idx += i
@@ -129,7 +117,8 @@ class BDFParser:
             next_head, next_fields, next_tail = self.parse_line(next_line)
             
             if not tail:
-                if next_head.strip():
+                next_head = next_head.strip()
+                if next_head and not ("+" in next_head):
                     break
 
             tail = next_tail

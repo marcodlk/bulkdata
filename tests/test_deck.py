@@ -198,11 +198,72 @@ def test_deck_load_bdf_pyNastran():
     assert aero[2] == aero[3] == 1.0
     
     assert not deck.find_one({"name": None})
+    assert not deck.find_one({"name": ""})
+    assert not deck.find_one({"name": "+"})
 
-    # with open(EXPECT_DIR + "/testA-fixed.bdf", "w") as f:
-    #     deck.dump(f)
     with open(EXPECT_DIR + "/testA-fixed.bdf") as f:
-        deck.dumps("fixed") == f.read()
+        assert deck.dumps("fixed") == f.read()
+
+    with open(EXPECT_DIR + "/testA-free.bdf") as f:
+        assert deck.dumps("free") == f.read()
+
+
+def test_zaero_example():
+
+    bdf_filename = BDF_DIR + "/zaero-example.bdf"
+
+    # load Deck from BDF file
+    with open(bdf_filename) as bdf_file:
+        deck = Deck.load(bdf_file)
+
+    # CORD2R variables
+    cid = 1
+    rid = None
+    a = [-2.9, 1.0, 0.0]
+    b = [3.6, 0.0, 1.0]
+    c = [5.2, 1.0, -2.9]
+
+    # create CORD2R card
+    cord2r = Card("CORD2R")
+    cord2r.append(cid)
+    cord2r.append(rid)
+    cord2r.extend(a)
+    cord2r.extend(b)
+    cord2r.extend(c)
+
+    # # print the CORD2R card in fixed format (the default)
+    # print("-- CORD2R fixed formatting --")
+    # print(cord2r.dumps("fixed"))
+
+    # # print the CORD2R card in free format
+    # print("-- CORD2R free formatting --")
+    # print(cord2r.dumps("free"))
+
+    # add card to the deck
+    deck.append(cord2r)
+
+    # get AEROZ card
+    aeroz = deck.find_one({"name": "AEROZ"})
+
+    # print("-- AEROZ before update --")
+    # print(aeroz.dumps())
+
+    # update the ACSID field (first one)
+    aeroz[0] = cid
+
+    # update mass and length units fields while we're at it
+    aeroz[[3, 4]] = ["N", "M"] 
+
+    # print("-- AEROZ after update --")
+    # print(aeroz.dumps())
+
+    # dump Deck to update BDF file
+    with open(EXPECT_DIR + "/zaero-example-update.bdf") as f:
+        assert deck.dumps() == f.read()
+        
+    # with open(EXPECT_DIR + "/zaero-example-update.bdf", "w") as f:
+    #     deck.dump(f)
+    # assert False
 
 
     

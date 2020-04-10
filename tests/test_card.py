@@ -29,7 +29,8 @@ HELLO   99      helloworld      0       3.3     1       6.6     2       +0
 def test_card_blank():
 
     size = 16
-    card = Card("BLANK", size=size)
+    card = Card("BLANK   ", size=size)
+    assert card.name == "BLANK"
     assert len(card.fields) == size
     # format object strips trailing blank fields during write
     expect = """\
