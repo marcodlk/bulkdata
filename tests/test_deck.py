@@ -199,10 +199,10 @@ def test_deck_load_bdf_pyNastran():
     
     assert not deck.find_one({"name": None})
 
-    with open(EXPECT_DIR + "/testA-fixed.bdf", "w") as f:
-        deck.dump(f)
-    # with open(EXPECT_DIR + "/testA-fixed.bdf") as f:
-    #     deck.dumps("fixed") == f.read()
+    # with open(EXPECT_DIR + "/testA-fixed.bdf", "w") as f:
+    #     deck.dump(f)
+    with open(EXPECT_DIR + "/testA-fixed.bdf") as f:
+        deck.dumps("fixed") == f.read()
 
 
     
