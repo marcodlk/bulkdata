@@ -1,16 +1,15 @@
 from collections.abc import Sequence
 
-from .abc import BulkDataDeck
-from .format import DefaultFormat
 from .card import Card
-from .util import islist
+from .field import Field, write_field
+from .util import islist, repr_list
+from .parse import BDFParser
 
 
-class Deck(BulkDataDeck):
+class Deck():
     
-    def __init__(self, cards=None, format=None, header=None):
+    def __init__(self, cards=None, header=None):
         self._cards = cards or []
-        self._format = format or DefaultFormat()
         self.header = header or ""
         
     def append(self, card):
@@ -19,13 +18,8 @@ class Deck(BulkDataDeck):
     def extend(self, card):
         self._cards.extend(card)
 
-    def reformat(self, new_format):
-        for card in self._cards:
-            card.reformat(new_format)
-        self._format = new_format
-        
     def _normalize_filter_value(self, value):
-        return self._format.format_field(value).strip()
+        return write_field(value).strip()
     
     def _iter(self, value):
         if islist(value):
@@ -184,22 +178,18 @@ class Deck(BulkDataDeck):
         else:
             raise TypeError(key, type(key))
 
-    def __str__(self):
-        return self.dumps()
-
     @classmethod
-    def loads(cls, deck_str, format=None):
-        
-        format = format or DefaultFormat()
+    def loads(cls, deck_str):
 
         cards = []
-        header, card_tuples = format.read_deck(deck_str)
+        header, card_tuples = BDFParser(deck_str).parse()
 
         for name, fields in card_tuples:
-            card = Card(name, format=format)
+            card = Card(name)
+            fields = [Field(field_val) for field_val in fields]
             card.set_raw_fields(fields)
             cards.append(card)
-        obj = cls(cards, format, header)
+        obj = cls(cards, header)
 
         # if obj.find_one({"name": None}):
         #     raise Warning("Loaded cards with no name. This usually "
@@ -208,26 +198,35 @@ class Deck(BulkDataDeck):
         return obj
 
     @classmethod
-    def load(cls, fp, format=None):
-        return cls.loads(fp.read(), format)
+    def load(cls, fp):
+        return cls.loads(fp.read())
 
-    def dumps(self):
-        return self._format.write_deck(self)
+    def dumps(self, format=None):
+        bulk = "".join([card.dumps(format) for card in self.cards])
+        return self.header + "\nBEGIN BULK\n" + bulk + "ENDDATA"
 
-    def dump(self, fp):
-        return fp.write(self.dumps())
+    def dump(self, fp, format=None):
+        return fp.write(self.dumps(format=format))
+
+    def __str__(self):
+        return self.dumps()
+
+    def __len__(self):
+        return self.cards.__len__()
+
+    def __iter__(self):
+        return self.cards.__iter__()
+
+    def __bool__(self):
+        return bool(self.cards)
+
+    def __repr__(self):
+        return "{}({})".format(self.__class__.__name__, 
+                               repr_list(self.cards))
 
     @property
     def cards(self):
         return self._cards
-
-    @property
-    def format(self):
-        return self._format
-
-    @format.setter
-    def format(self, new_format):
-        self.reformat(new_format)
 
 
 __all__ = ["Deck"]

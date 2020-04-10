@@ -4,7 +4,7 @@
 
 import pytest
 
-from bulkdata.format import FixedFormat, FreeFormat
+# from bulkdata.format import FixedFormat, FreeFormat
 from bulkdata.card import Card
 from bulkdata.deck import Deck
 
@@ -50,8 +50,7 @@ def cards():
 
 def test_deck_init_iter(cards):
 
-    format_ = FixedFormat()
-    deck = Deck(cards, format=format_)
+    deck = Deck(cards)
     assert len(deck) == len(cards)
 
     for i, card in enumerate(deck):
@@ -60,8 +59,7 @@ def test_deck_init_iter(cards):
 
 def test_deck_append(cards):
 
-    format_ = FixedFormat()
-    deck = Deck(format=format_)
+    deck = Deck()
     assert len(deck) == 0
 
     for card in cards:
@@ -74,8 +72,7 @@ def test_deck_append(cards):
 
 def test_deck_extend(cards):
 
-    format_ = FixedFormat()
-    deck = Deck(format=format_)
+    deck = Deck()
     assert len(deck) == 0
 
     deck.extend(cards)
@@ -87,8 +84,7 @@ def test_deck_extend(cards):
 
 def test_deck_find(cards):
 
-    format_ = FixedFormat()
-    deck = Deck(cards, format=format_)
+    deck = Deck(cards)
 
     found = list(deck.find())
     assert len(found) == len(cards)
@@ -102,8 +98,7 @@ def test_deck_find(cards):
 
 def test_deck_find_one():
 
-    format_ = FixedFormat()
-    deck = Deck(format=format_)
+    deck = Deck()
 
     for _ in range(10):
         deck.append(Card("CLONE"))
@@ -115,8 +110,7 @@ def test_deck_find_one():
 
 def test_deck_find_notexist():
    
-    format_ = FixedFormat()
-    deck = Deck(format=format_)
+    deck = Deck()
 
     for _ in range(10):
         deck.append(Card("CLONE"))
@@ -130,8 +124,7 @@ def test_deck_find_notexist():
 
 def test_deck_replace(cards):
 
-    format_ = FixedFormat()
-    deck = Deck(cards, format=format_)
+    deck = Deck(cards)
 
     replacement = Card("UNO")
     deck.replace({"name": "ONE"}, replacement)
@@ -143,8 +136,7 @@ def test_deck_replace(cards):
 
 def test_deck_update(cards):
 
-    format_ = FixedFormat()
-    deck = Deck(cards, format=format_)
+    deck = Deck(cards)
 
     index = 0
     index_value = "int"
@@ -161,7 +153,7 @@ def test_deck_update(cards):
 
     card = next(deck.find({"name": "TWO"}))
     assert card[:2] == ["slicesli", "ce"]
-    assert card.get_long(slice_) == slice_value
+    assert card.get_large(slice_) == slice_value
 
     indexs =[-4, -3, -2, -1]
     indexs_values = [1001, 1002, 1003, 1004]
@@ -178,7 +170,7 @@ def test_deck_update(cards):
     deck_str = deck.dumps()
 
     # redo the update, but without using update func
-    deck2 = Deck(cards, format=format_)
+    deck2 = Deck(cards)
 
     card = deck.find_one({"name": "ONE"})
     card[index] = index_value 
@@ -199,7 +191,7 @@ def test_deck_load_bdf_pyNastran():
     bdf_filename = BDF_DIR + "/testA.bdf"
 
     with open(bdf_filename) as bdf_file:
-        deck = Deck.load(bdf_file, FreeFormat())
+        deck = Deck.load(bdf_file)
 
     aero = deck.find_one("AERO")
     assert not (aero[0] or aero[1])
@@ -207,11 +199,10 @@ def test_deck_load_bdf_pyNastran():
     
     assert not deck.find_one({"name": None})
 
-    deck.format = FixedFormat()
-    # with open(EXPECT_DIR + "/testA-fixed.bdf", "w") as f:
-    #     deck.dump(f)
-    with open(EXPECT_DIR + "/testA-fixed.bdf") as f:
-        deck.dumps() == f.read()
+    with open(EXPECT_DIR + "/testA-fixed.bdf", "w") as f:
+        deck.dump(f)
+    # with open(EXPECT_DIR + "/testA-fixed.bdf") as f:
+    #     deck.dumps("fixed") == f.read()
 
 
     

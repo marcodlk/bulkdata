@@ -78,6 +78,7 @@ class BDFParser:
     
     def parse_fields(self, fields):
         fieldsperline = self.FIELDSPERLINE
+        fieldsperbody = self.FIELDSPERBODY
         numfields = len(fields)
         head, body, tail = None, [], None
         if numfields == 0:
@@ -88,6 +89,10 @@ class BDFParser:
             body = fields[1:]
         if numfields == fieldsperline:
             tail = body.pop(-1)
+        # missing fields are blank fields
+        nummissing  = fieldsperbody - len(body)
+        if nummissing > 0:
+            body.extend(["" for _ in range(nummissing)])
         return head, body, tail
     
     def parse_line_free(self, line):
@@ -97,7 +102,7 @@ class BDFParser:
     def parse_line_fixed(self, line):
         fieldwidth = self.FIELDWIDTH
         length = len(line)
-        fields = [line[i:i+fieldwidth] 
+        fields = [line[i:i+fieldwidth]
                   for i in range(0, length, fieldwidth)]
         return self.parse_fields(fields)
     
@@ -108,9 +113,6 @@ class BDFParser:
 
         else:
             return self.parse_line_fixed(line)
-        
-    # def get_next_card_line(self):
-    #     pass
         
     def parse_card(self):
         
@@ -132,6 +134,13 @@ class BDFParser:
 
             tail = next_tail
             fields.extend(next_fields)
+
+        # pop trailing blank fields
+        for i in reversed(range(len(fields))):
+            if not fields[i].strip():
+                del fields[i]
+            else:
+                break
 
         return name, fields
             

@@ -8,3 +8,4 @@ TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 BDF_DIR = TEST_DIR + "/bdf"
 EXPECT_DIR = TEST_DIR + "/expect"
+
