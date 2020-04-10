@@ -35,7 +35,7 @@ Features
   ``list`` objects but can be serialized to a bulk data formatted string
   representing the card.
 
-* No explicit Bulk Data Card definitions are necessary beforehand.
+* No explicit Bulk Data Card definitions are necessary.
 
 * ``Deck`` objects represent a Bulk Data "Deck" containing Bulk Data Cards
   that can be added, edited, or deleted.
