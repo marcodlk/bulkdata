@@ -92,6 +92,19 @@ class Deck():
         else:
             for i, card in enumerate(self._cards):
                 yield i, card
+    
+    def _enumerate_find_one(self, filter=None):
+        filter = filter or {}
+        if filter:
+            for i, card in enumerate(self._cards):
+                if self._matches(filter, card):
+                    return i, card
+            return None, None
+        else:
+            try:
+                return 0, self._cards[0]
+            except IndexError:
+                return None, None
 
     def _normalize_filter(self, filter):
         if filter is None:
@@ -107,10 +120,13 @@ class Deck():
             yield card
 
     def find_one(self, filter=None):
-        try:
-            return next(self.find(filter))
-        except StopIteration:
-            return None
+        # try:
+        #     return next(self.find(filter))
+        # except StopIteration:
+        #     return None
+        filter = self._normalize_filter(filter)
+        _, card = self._enumerate_find_one(filter)
+        return card
     
     def replace(self, filter, card):
         filter = self._normalize_filter(filter)
