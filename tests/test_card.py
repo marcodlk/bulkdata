@@ -206,14 +206,12 @@ def test_load_card_modify(fields, card_str):
 
     card.name = "GOODBYE"
     card[0] = 100
-    # card[1] = "she"
-    # card[2] = "planet"
-    card[[1, 2]] = "thisislongstring"
+    card[[1, 2]] = "short"
     card[3::2] = [3, 4, 5]
     card[4::2] = [1.1, 2.2, 3.3]
 
     modified_card_str = """\
-GOODBYE 100     thisislongstring3       1.1     4       2.2     5       +0      
+GOODBYE 100     short           3       1.1     4       2.2     5       +0      
 +0      3.3
 """
 
@@ -297,3 +295,21 @@ SPARSE  test
 
     card2 = Card.loads(card_str)
     assert card.dumps() == card2.dumps()
+
+def test_card_set_incomplete_overwrite():
+
+    card = Card("OVERWRT")
+    card.extend([-1 for _ in range(8)])
+    card.extend(["isstring" for _ in range(8)])
+    card.append("done")
+
+    card[:8] = list(range(7))
+    card[8:16] = "shorter"
+
+    card_str = """\
+OVERWRT 0       1       2       3       4       5       6               +0      
++0      shorter                                                         +1      
++1      done
+"""
+    print(card.dumps("fixed"))
+    assert card.dumps("fixed") == card_str

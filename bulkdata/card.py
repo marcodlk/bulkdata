@@ -25,7 +25,7 @@ class Card:
         :param size: The number of inial blank fields, defaults to 0
         """
         self.name = name
-        self._fields = [Field(None) for _ in range(size)]
+        self._fields = [self._blank_field() for _ in range(size)]
 
     def _convert_to_fields(self, value, fieldspan=1):
         if fieldspan == 1:
@@ -34,6 +34,9 @@ class Card:
             return LargeField(value, fieldspan).split()
         else:
             raise ValueError("fieldspan < 1")
+
+    def _blank_field(self):
+        return Field(None)
 
     def set_raw_fields(self, fields):
         """Set the fields directly, without internal conversion of `fields`
@@ -115,10 +118,11 @@ class Card:
                              .format(len(values), numindexs, values, indexs))
         for i, index in enumerate(indexs):
             try:
-                self._setsinglefield(index, values[i])
+                value = values[i]
             except IndexError:
-                # no more values to set
-                break
+                # no more values, set blank
+                value = None
+            self._setsinglefield(index, value)
             
     def _setmultifieldvalue(self, indexs, value):
         """Set a field value spanning multiple field cells given 
@@ -129,7 +133,11 @@ class Card:
             raise ValueError("fieldspan < 1")
         fields = self._convert_to_fields(value, fieldspan=fieldspan)
         for i, index in enumerate(indexs):
-            self._fields[index] = fields[i]
+            try:
+                new_field = fields[i]
+            except IndexError:
+                new_field = self._blank_field()
+            self._fields[index] = new_field
     
     def _setmultifield(self, indexs, value):
         """Set field value(s) spanning multiple field cells.
