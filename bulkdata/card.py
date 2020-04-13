@@ -215,6 +215,14 @@ class Card:
         else:
             raise TypeError(key, type(key))
         return LargeField.join(fields).value
+
+    def __delitem__(self, key):
+        """Delete the field item from card.
+        
+        :param key: The indexing object denoting which field(s)
+                    to delete
+        """
+        self._fields.__delitem__(key)
             
     def dumps(self, format=None):
         """Dump the card to bulk data formatted string.

@@ -40,6 +40,18 @@ BLANK                                                                   +0
     assert card.dumps() == expect
 
 
+def test_card_delitem():
+
+    card = Card("DELETE  ")
+    card.append("deletethis", fieldspan=2)
+    del card[1]
+    del card[0]
+    expect = """\
+DELETE
+"""
+    assert card.dumps() == expect
+
+
 def test_card_setmultifieldvalue():
 
     large_string = "the-answer-is-42"
