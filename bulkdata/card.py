@@ -1,3 +1,10 @@
+"""The :mod:`~bulkdata.card` module provides classes related
+to the creation and manipulation of bulk data card objects.
+It contains the :class:`~bulkdata.card.Card` class that 
+facilitates the conversion of collections of field values to
+and from bulk data card formatted strings.
+"""
+
 from collections import OrderedDict
 
 from .field import Field, LargeField
@@ -9,6 +16,14 @@ from .util import islist, split_fields, repr_list
 class Card:
     
     def __init__(self, name=None, size=0):
+        """:class:`~bulkdata.card.Card` class allows the user 
+        to create and modify bulk data cards. It is functionally
+        similar to a `list` but maintains the field values as
+        `Field` objects internally.
+
+        :param name: The name of the card
+        :param size: The number of inial blank fields, defaults to 0
+        """
         self.name = name
         self._fields = [Field(None) for _ in range(size)]
 
@@ -21,12 +36,32 @@ class Card:
             raise ValueError("fieldspan < 1")
 
     def set_raw_fields(self, fields):
+        """Set the fields directly, without internal conversion of `fields`
+        values to `Field` objects.
+        
+        .. note:: 
+            
+            The user should avoid using this function unless he/she
+            knows what they are doing.
+        """
         self._fields = fields
 
     def append(self, value, fieldspan=1):
+        """Append a field value to card fields.
+
+        :param value: The field value
+        :param fieldspan: The number of field cells the value spans,
+                          defaults to 1
+        """
         self._fields.extend(self._convert_to_fields(value, fieldspan))
 
     def extend(self, values, fieldspan=1):
+        """Extend card fields with sequence of field values.
+
+        :param values: The sequence of field values
+        :param fieldspan: The number of field cells that each value spans,
+                          defaults to 1
+        """
         if fieldspan == 1:
             fields = [Field(value) for value in values]
             self._fields.extend(fields)
@@ -35,9 +70,18 @@ class Card:
                 self._fields.extend(self._convert_to_fields(value, fieldspan))
 
     def pop(self):
+        """Remove the last field.
+        """
         return self._fields.pop()
         
     def resize(self, size):
+        """Resize the card fields to contain *size* fields. If current
+        number of fields is greater than *size*, the extra fields will
+        be removed from the end. If number of fields is less than *size*,
+        extra blank fields are appended.
+
+        :param size: The desired number of fields
+        """
         numfields = len(self._fields)
         diff = size - numfields
         if diff > 0:
@@ -47,15 +91,21 @@ class Card:
             for _ in range(abs(diff)):
                 self._fields.pop()
     
-    def strip(self):
+    def strip(self): #TODO: rename to rstrip ?
+        """Remove any trailing blank fields.
+        """
         for i in reversed(range(len(self._fields))):
             if not self._fields[i]:
                 del self._fields[i]
         
     def _setsinglefield(self, index, value):
+        """Set a single field value at the index.
+        """
         self._fields[index] = Field(value)
         
     def _setmultifieldlist(self, indexs, values):
+        """Set list of field values at the given indexes.
+        """
         numindexs = len(indexs)
         if len(values) > numindexs:
             raise IndexError("Number of values, {}, greater than number "
@@ -71,6 +121,9 @@ class Card:
                 break
             
     def _setmultifieldvalue(self, indexs, value):
+        """Set a field value spanning multiple field cells given 
+        by indexes.
+        """
         fieldspan = len(indexs)
         if fieldspan < 1:
             raise ValueError("fieldspan < 1")
@@ -79,35 +132,54 @@ class Card:
             self._fields[index] = fields[i]
     
     def _setmultifield(self, indexs, value):
+        """Set field value(s) spanning multiple field cells.
+        """
         if islist(value):
             self._setmultifieldlist(indexs, value)
         else:
             self._setmultifieldvalue(indexs, value)
 
     def _convert_slice_to_steps(self, slice_):
+        """Convert a slice to a list of the corresponding steps.
+        """
         start = slice_.start or 0
         stop  = slice_.stop or len(self._fields)
         step  = slice_.step or 1
         return list(range(start, stop, step))
         
     def __setitem__(self, key, value):
+        """Set field item into the card.
+
+        :param key: The indexing object denoting where to set 
+                    the field(s)
+        :param value: The field value(s) to set.
+        """
         if isinstance(key, int):
             self._setsinglefield(key, value)
         elif isinstance(key, slice):
             steps = self._convert_slice_to_steps(key)
             self._setmultifield(steps, value)
-        elif islist(value):
+        elif islist(key):
             self._setmultifield(key, value)
         else:
             raise TypeError(key, type(key))
 
     def _getsinglefield(self, index):
+        """Get a single field value at the index.
+        """
         return self._fields[index].value
 
     def _getmultifield(self, indexs):
+        """Get list of field values at the given indexes.
+        """
         return [self._fields[i].value for i in indexs]
 
     def __getitem__(self, key):
+        """Get field item from the card.
+
+        :param key: The indexing object denoting which field(s) to get
+        :return: The field value(s)
+        """
         if isinstance(key, int):
             return self._getsinglefield(key)
         elif isinstance(key, slice):
@@ -119,7 +191,12 @@ class Card:
             raise TypeError(key, type(key))
 
     def get_large(self, key):
-        """Get field value spanning multiple fields
+        """Get field value spanning multiple fields. This gets the
+        same fields as :meth:`~bulkdata.card.Card.__getitem__`
+        but it joins them before converting to a single large value.
+        
+        :param key: The indexing object denoting which field(s) to get
+        :return: The large field value
         """
         if isinstance(key, int):
             return self._getsinglefield(key)
@@ -132,11 +209,21 @@ class Card:
         return LargeField.join(fields).value
             
     def dumps(self, format=None):
+        """Dump the card to bulk data formatted string.
+
+        :param format: the desired format, can be one of: 
+                       ["free", "fixed"]
+        :return: The bulk data card string representation
+        """
         return format_card(self, format)
     
     @classmethod
     def loads(cls, card_str):
+        """Load :class:`~bulkdata.card.Card` object from a
+        bulk data card string.
 
+        :return: The loaded :class:`~bulkdata.card.Card` object
+        """
         card_name, card_fields = BDFParser(card_str).parse_card()
         obj = cls(card_name)
         obj.set_raw_fields([Field(value) for value in card_fields])
@@ -144,6 +231,8 @@ class Card:
         return obj
 
     def values(self):
+        """Get a list of the values of the card fields.
+        """
         return [field.value for field in self._fields]
     
     def __contains__(self, value):
@@ -181,74 +270,74 @@ class Card:
         return self._fields
 
 
-class CardType:
+# class CardType:
     
-    def __init__(self, name):
-        self._name = name
-        self._entries = OrderedDict()
+#     def __init__(self, name):
+#         self._name = name
+#         self._entries = OrderedDict()
 
-    def register(self, name, index, default=None, valid=None, fieldspan=1):
-        entry_meta = {
-            "index": index,
-            "default": default,
-            "valid": valid,
-            "fieldspan": fieldspan
-        }
-        self._entries[name] = entry_meta
+#     def register(self, name, index, default=None, valid=None, fieldspan=1):
+#         entry_meta = {
+#             "index": index,
+#             "default": default,
+#             "valid": valid,
+#             "fieldspan": fieldspan
+#         }
+#         self._entries[name] = entry_meta
 
-    def _validate(self, valid, value):
-        if valid and not valid(value):
-            raise Exception("failed validation") #TODO
+#     def _validate(self, valid, value):
+#         if valid and not valid(value):
+#             raise Exception("failed validation") #TODO
 
-    def __call__(self, *args, **kwargs):
+#     def __call__(self, *args, **kwargs):
         
-        entry_names = list(self._entries.keys())
-        entry_values = {}
+#         entry_names = list(self._entries.keys())
+#         entry_values = {}
         
-        for arg in args:
-            name = entry_names.pop(0)
-            entry_values[name] = arg
+#         for arg in args:
+#             name = entry_names.pop(0)
+#             entry_values[name] = arg
             
-        for name, arg in kwargs.items():
-            entry_names.pop(entry_names.index(name))
-            entry_values[name] = arg
+#         for name, arg in kwargs.items():
+#             entry_names.pop(entry_names.index(name))
+#             entry_values[name] = arg
             
-        # entries not handled by args or kwargs, try to use defaults
-        for name in entry_names:
-            default = self._entries[name].get("default")
-            if default is not None:
-                entry_values[name] = default
-            else:
-                raise ValueError("No value specified for required field: {}".format(name))
+#         # entries not handled by args or kwargs, try to use defaults
+#         for name in entry_names:
+#             default = self._entries[name].get("default")
+#             if default is not None:
+#                 entry_values[name] = default
+#             else:
+#                 raise ValueError("No value specified for required field: {}".format(name))
 
-        # validate and count total number of fields required
-        numfields = 0
-        for name, entry_meta in self._entries.items():
+#         # validate and count total number of fields required
+#         numfields = 0
+#         for name, entry_meta in self._entries.items():
             
-            value = entry_values[name]
-            fieldspan = entry_meta["fieldspan"]
-            valid = entry_meta["valid"]
+#             value = entry_values[name]
+#             fieldspan = entry_meta["fieldspan"]
+#             valid = entry_meta["valid"]
             
-            if islist(value):
+#             if islist(value):
                 
-                for each in value:
-                    self._validate(valid, each)
-                numfields += len(value) * fieldspan
+#                 for each in value:
+#                     self._validate(valid, each)
+#                 numfields += len(value) * fieldspan
                 
-            else:
+#             else:
                 
-                self._validate(valid, value)
-                numfields += 1 * fieldspan
+#                 self._validate(valid, value)
+#                 numfields += 1 * fieldspan
         
-        card = Card(self._name, size=numfields)
+#         card = Card(self._name, size=numfields)
         
-        for name, entry_meta in self._entries.items():
+#         for name, entry_meta in self._entries.items():
             
-            value = entry_values[name]
+#             value = entry_values[name]
 
-            card[entry_meta["index"]] = value
+#             card[entry_meta["index"]] = value
             
-        return card
+#         return card
 
 
-__all__ = ["Card", "CardType"]
+__all__ = ["Card"]

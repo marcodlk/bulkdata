@@ -206,13 +206,14 @@ def test_load_card_modify(fields, card_str):
 
     card.name = "GOODBYE"
     card[0] = 100
-    card[1] = "she"
-    card[2] = "planet"
+    # card[1] = "she"
+    # card[2] = "planet"
+    card[[1, 2]] = "thisislongstring"
     card[3::2] = [3, 4, 5]
     card[4::2] = [1.1, 2.2, 3.3]
 
     modified_card_str = """\
-GOODBYE 100     she     planet  3       1.1     4       2.2     5       +0      
+GOODBYE 100     thisislongstring3       1.1     4       2.2     5       +0      
 +0      3.3
 """
 
