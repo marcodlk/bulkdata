@@ -100,6 +100,8 @@ class Card:
         for i in reversed(range(len(self._fields))):
             if not self._fields[i]:
                 del self._fields[i]
+            else:
+                break
         
     def _setsinglefield(self, index, value):
         """Set a single field value at the index.

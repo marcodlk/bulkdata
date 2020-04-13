@@ -52,6 +52,18 @@ DELETE
     assert card.dumps() == expect
 
 
+def test_card_strip():
+
+    card = Card("STRIP", size=8)
+    card[4] = "stophere"
+    card.strip()
+    print(card.dumps())
+    expect = """\
+STRIP                                   stophere
+"""
+    assert card.dumps() == expect
+
+
 def test_card_setmultifieldvalue():
 
     large_string = "the-answer-is-42"
