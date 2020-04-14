@@ -330,7 +330,19 @@ After these modifications, we can see that the card has been updated:
 
     EXAMPLE 199     3.14    string  newlongstring   0       1       2       +0      
     +0      3       4       5       6       7       8       9
-    
+
+The card is functionally analogous to a ``list`` of field values.
+
+.. code-block:: python
+
+    print("Number of fields:", len(card))
+    print("Card field values:", card[:])
+
+.. code-block:: none
+
+    Number of fields: 16
+    Card field values: [199, 3.14, 'string', 'newlongs', 'tring', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '']
+
 
 Alternate way of building a card
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -454,6 +466,18 @@ some cards.
         # change field i
         card_var[i] = "EDITED"
         deck.append(card_var)
+
+The deck is functionally analogous to a ``list`` of cards.
+
+.. code-block:: python
+
+    print("Number of cards:", len(deck))
+    print("First 3 cards:", deck[:3])
+
+.. code-block:: none
+
+    Number of cards: 8
+    First 3 cards: [Card("EXAMPL0", ['EDITED', 3.14, 'string', '', '', 0, 1, 2]), Card("EXAMPL1", [101, 'EDITED', 'string', '', '', 0, 1, 2]), Card("EXAMPL2", [101, 3.14, 'EDITED', '', '', 0, 1, 2])]
 
 The :meth:`~bulkdata.deck.Deck.dumps` method returns the deck's
 string representation, which is the concatenation of its cards'

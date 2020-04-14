@@ -1,3 +1,7 @@
+"""The :mod:`~bulkdata.deck` module provides the 
+:class:`~bulkdata.deck.Deck` class.
+"""
+
 from collections.abc import Sequence
 
 from .card import Card
@@ -7,15 +11,34 @@ from .parse import BDFParser
 
 
 class Deck():
+    """:class:`~bulkdata.deck.Deck` class allows the user
+    to load and update bulk data files, loading the 
+    bulk data cards into :class:`~bulkdata.card.Card`
+    objects.
+
+    :param cards: initialize the deck with these cards, 
+                    defaults to ``None``.
+    :param header: the header, which is prepended to the bulk
+                    data section when dumping the deck, 
+                    defaults to ``None``.
+    """
     
     def __init__(self, cards=None, header=None):
         self._cards = cards or []
         self.header = header or ""
         
     def append(self, card):
+        """Append a card to the deck.
+
+        :param card: The card to append
+        """
         self._cards.append(card)
         
     def extend(self, cards):
+        """Extend deck cards with sequence of cards.
+
+        :param cards: The sequence of cards
+        """
         self._cards.extend(cards)
     
     def _iter(self, value):
@@ -114,21 +137,106 @@ class Deck():
             return filter
 
     def find(self, filter=None):
+        """Find cards matching the query denoted by *filter*.
+
+        :type filter: dict, str
+        :param filter: Specifies which cards to find.
+        :return: A generator object iterating through every card
+                 matching the filter.
+
+        If *filter* is a ``dict``, there are three keywords that may
+        be used.
+
+        * **name**, ``str``: Filter for cards with matching *name*.
+
+        * **fields**, ``dict``: Given an "index" and "field" member, filter
+          cards where the field(s) at *index* index, has/have
+          value *field*.
+
+        * **contains**: Filter for cards containing a field that matches
+          the *contains* value, or any *contains* value if *contains*
+          is a list.
+
+        The following code block is an example of using ``find`` with
+        a filter dict:
+
+        .. code-block:: python
+
+            filter_ = {
+                # name is ASET1
+                "name": "ASET1",
+                
+                "fields": {
+                    
+                    # first field
+                    "index": 0,
+                    
+                    # with value 3
+                    "value": 3
+                },
+                
+                # contains values 1 and "THRU"
+                "contains": [1, "THRU"] 
+            }
+
+            card = next(deck.find(filter_))
+            print(card)
+
+        .. code-block:: none
+
+            ASET1   3       1       THRU    8
+
+        If *filter* is a ``str``, the filter will match cards
+        with name matching *filter*.
+
+        .. code-block:: python
+
+            card = next(deck.find("AERO"))
+            print(card)
+
+        .. code-block:: none
+
+            AERO    3       1.3     100.    .00001  1       -1
+
+        """
         filter = self._normalize_filter(filter)
         for _, card in self._enumerate_find(filter):
             yield card
 
     def find_one(self, filter=None):
+        """Find the first card matching the query denoted by *filter*.
+
+        :type filter: dict, str
+        :param filter: Specifies which card to find.
+        :return: The first matching card, or ``None`` if no match
+                 is found.
+        """
         filter = self._normalize_filter(filter)
         _, card = self._enumerate_find_one(filter)
         return card
     
     def replace(self, filter, card):
+        """Replace cards matching the query denoted by
+        *filter* with *card*.
+
+        :type filter: dict, str
+        :param filter: Specifies which cards to replace.
+        :param card: The replacement card
+        """
         filter = self._normalize_filter(filter)
         for i, _ in self._enumerate_find(filter):
             self._cards[i] = card
 
     def replace_one(self, filter, card):
+        """Replace the first card matching the query denoted by
+        *filter* with *card*.
+
+        :type filter: dict, str
+        :param filter: Specifies which card to replace.
+        :param card: The replacement card
+        :return: The replacement card, or ``None`` if no match
+                 is found.
+        """
         filter = self._normalize_filter(filter)
         i, _ = self._enumerate_find_one(filter)
         if i:
@@ -142,11 +250,32 @@ class Deck():
             card[index] = value
     
     def update(self, filter, update):
+        """Update cards matching the query denoted by *filter*
+        with changes denoted by *update* dict, which has
+        the same keyword options as the *fields* dict in *filter*.
+
+        .. note:: 
+        
+            Avoid this function as there is no current tutorial,
+            has not been well tested, and does not appear to add any
+            functionality not achieved otherwise.
+
+        :type filter: dict, str
+        :param filter: Specifies which cards to replace.
+        :param card: The replacement card
+        """
         filter = self._normalize_filter(filter)
         for i, _ in self._enumerate_find(filter):
             self._update_card(self._cards[i], update)
     
     def delete(self, filter=None):
+        """Delete cards matching the query denoted by
+        *filter*.
+
+        :type filter: dict, str
+        :param filter: Specifies which cards to delete.
+        :return: The number of cards deleted.
+        """
         filter = self._normalize_filter(filter)
         delete_i = [i for i, _ in self._enumerate_find(filter)]
         for i in reversed(delete_i):
@@ -201,7 +330,12 @@ class Deck():
 
     @classmethod
     def loads(cls, deck_str):
+        """Load :class:`~bulkdata.deck.Deck` object from a
+        bulk data string.
 
+        :param deck_str: the bulk data string
+        :return: The loaded :class:`~bulkdata.deck.Deck` object
+        """
         cards = []
         header, card_tuples = BDFParser(deck_str).parse()
 
@@ -220,16 +354,34 @@ class Deck():
 
     @classmethod
     def load(cls, fp):
+        """Load :class:`~bulkdata.deck.Deck` object from a
+        bulk data file object.
+
+        :param fp: the bulk data file object
+        :return: The loaded :class:`~bulkdata.deck.Deck` object
+        """
         return cls.loads(fp.read())
 
-    def dumps(self, format=None):
+    def dumps(self, format="fixed"):
+        """Dump the deck to a bulk data string.
+
+        :param format: the desired format, can be one of: 
+                       ["free", "fixed"], defaults to "fixed"
+        :return: The bulk data string
+        """
         bulk = "".join([card.dumps(format) for card in self.cards])
         if self.header:
             return self.header + "\nBEGIN BULK\n" + bulk + "ENDDATA"
         else:
             return bulk
 
-    def dump(self, fp, format=None):
+    def dump(self, fp, format="fixed"):
+        """Dump the deck to a bulk data file.
+
+        :param fp: the bulk data file object
+        :param format: the desired format, can be one of: 
+                       ["free", "fixed"], defaults to "fixed"
+        """
         return fp.write(self.dumps(format=format))
 
     def __str__(self):
@@ -250,6 +402,8 @@ class Deck():
 
     @property
     def cards(self):
+        """The deck cards.
+        """
         return self._cards
 
 

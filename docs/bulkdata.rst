@@ -1,5 +1,5 @@
-bulkdata package
-================
+bulkdata
+========
 
 Subpackages
 ^^^^^^^^^^^
@@ -11,75 +11,69 @@ Subpackages
 Submodules
 ^^^^^^^^^^
 
-bulkdata.card module
---------------------
+bulkdata.card
+-------------
 
 .. automodule:: bulkdata.card
     :members:
     :undoc-members:
-    :show-inheritance:
 
-bulkdata.cli module
--------------------
+bulkdata.cli
+------------
 
 .. automodule:: bulkdata.cli
     :members:
     :undoc-members:
-    :show-inheritance:
 
-bulkdata.deck module
---------------------
+bulkdata.deck
+-------------
 
 .. automodule:: bulkdata.deck
     :members:
     :undoc-members:
-    :show-inheritance:
 
-bulkdata.error module
----------------------
+bulkdata.error
+--------------
 
 .. automodule:: bulkdata.error
     :members:
     :undoc-members:
-    :show-inheritance:
 
-bulkdata.field module
----------------------
+bulkdata.field
+--------------
 
 .. automodule:: bulkdata.field
     :members:
     :undoc-members:
-    :show-inheritance:
 
-bulkdata.format module
-----------------------
+bulkdata.format
+---------------
 
 .. automodule:: bulkdata.format
     :members:
     :undoc-members:
-    :show-inheritance:
 
-bulkdata.parse module
----------------------
+bulkdata.parse
+--------------
 
 .. automodule:: bulkdata.parse
     :members:
     :undoc-members:
-    :show-inheritance:
 
-bulkdata.util module
---------------------
+bulkdata.util
+-------------
 
 .. automodule:: bulkdata.util
     :members:
     :undoc-members:
-    :show-inheritance:
 
 
-Module contents
-^^^^^^^^^^^^^^^
+Module
+^^^^^^
 
 .. automodule:: bulkdata
     :members:
     :undoc-members:
-    :show-inheritance:
+
+The :class:`~bulkdata.card.Card` and :class:`~bulkdata.deck.Deck`
+classes are accessible via the top-level :mod:`bulkdata` module.

@@ -33,11 +33,11 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     description="Bulk Data Python Package makes it easy to create and manipulate bulk data files.",
-    entry_points={
-        'console_scripts': [
-            'bulkdata=bulkdata.cli:main',
-        ],
-    },
+    # entry_points={
+    #     'console_scripts': [
+    #         'bulkdata=bulkdata.cli:main',
+    #     ],
+    # },
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,

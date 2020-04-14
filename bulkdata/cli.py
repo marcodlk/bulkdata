@@ -1,4 +1,4 @@
-"""Console script for bulkdata."""
+"""Console script for bulkdata. (Currently does nothing)"""
 import sys
 import click
 

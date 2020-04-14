@@ -1,5 +1,5 @@
-bulkdata.pyNastran package
-==========================
+bulkdata.pyNastran
+==================
 
 Since `pyNastran`_ is not a required package, if ``bulkdata`` is
 unable to import it, this local ``pyNastran`` package is used as

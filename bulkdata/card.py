@@ -14,16 +14,14 @@ from .util import islist, split_fields, repr_list
 
 
 class Card:
+    """:class:`~bulkdata.card.Card` class allows the user 
+    to create and modify bulk data cards.
+
+    :param name: The name of the card
+    :param size: The number of initial blank fields, defaults to 0
+    """
     
     def __init__(self, name=None, size=0):
-        """:class:`~bulkdata.card.Card` class allows the user 
-        to create and modify bulk data cards. It is functionally
-        similar to a `list` but maintains the field values as
-        `Field` objects internally.
-
-        :param name: The name of the card
-        :param size: The number of inial blank fields, defaults to 0
-        """
         self.name = name
         self._fields = [self._blank_field() for _ in range(size)]
 
@@ -226,11 +224,11 @@ class Card:
         """
         self._fields.__delitem__(key)
             
-    def dumps(self, format=None):
+    def dumps(self, format="fixed"):
         """Dump the card to bulk data formatted string.
 
         :param format: the desired format, can be one of: 
-                       ["free", "fixed"]
+                       ["free", "fixed"], defaults to "fixed"
         :return: The bulk data card string representation
         """
         return format_card(self, format)
@@ -240,6 +238,7 @@ class Card:
         """Load :class:`~bulkdata.card.Card` object from a
         bulk data card string.
 
+        :param card_str: the bulk data card string
         :return: The loaded :class:`~bulkdata.card.Card` object
         """
         card_name, card_fields = BDFParser(card_str).parse_card()
@@ -275,6 +274,8 @@ class Card:
 
     @property
     def name(self):
+        """The card name.
+        """
         return self._name
     
     @name.setter
@@ -285,6 +286,8 @@ class Card:
     
     @property
     def fields(self):
+        """The card fields.
+        """
         return self._fields
 
 
