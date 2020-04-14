@@ -269,9 +269,9 @@ class Card:
         return bool(self.fields)
 
     def __repr__(self):
-        return "{}({}, {})".format(self.__class__.__name__, 
+        return "{}(\"{}\", {})".format(self.__class__.__name__, 
                                    self.name, 
-                                   repr_list(self.fields))
+                                   repr_list(self.values()))
 
     @property
     def name(self):

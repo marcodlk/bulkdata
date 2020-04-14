@@ -96,6 +96,14 @@ def test_deck_find(cards):
         assert len(found2) == 1
 
 
+def test_deck_find_fields(cards):
+    pass
+
+
+def test_deck_find_contains(cards):
+    pass
+
+
 def test_deck_find_one():
 
     deck = Deck()
@@ -260,7 +268,7 @@ def test_zaero_example():
     # dump Deck to update BDF file
     with open(EXPECT_DIR + "/zaero-example-update.bdf") as f:
         assert deck.dumps() == f.read()
-        
+
     # with open(EXPECT_DIR + "/zaero-example-update.bdf", "w") as f:
     #     deck.dump(f)
     # assert False

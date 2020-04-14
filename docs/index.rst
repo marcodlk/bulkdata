@@ -8,7 +8,7 @@ Welcome to Bulk Data Python Package's documentation!
    readme
    installation
    usage
-   modules
+   api
    contributing
    authors
    history

@@ -15,11 +15,8 @@ class Deck():
     def append(self, card):
         self._cards.append(card)
         
-    def extend(self, card):
-        self._cards.extend(card)
-
-    def _normalize_filter_value(self, value):
-        return write_field(value).strip()
+    def extend(self, cards):
+        self._cards.extend(cards)
     
     def _iter(self, value):
         if islist(value):
@@ -51,8 +48,10 @@ class Deck():
         if filter_fields:
             match = True
             for index, value in self._iter_index_value(filter_fields):
-                value = self._normalize_filter_value(value)
-                match *= (card.fields[index].strip() == value)
+                try:
+                    match *= (card.fields[index].value == value)
+                except IndexError:
+                    return False
             return match
         else:
             return True
@@ -61,13 +60,13 @@ class Deck():
         filter_contains = filter.get("contains")
         if filter_contains:
             filter_contains = [
-                self._normalize_filter_value(value)
+                value
                 for value in self._iter(filter_contains)
             ]
             # loop through fields, popping off matches
             for field in card.fields:
                 try:
-                    filter_contains.remove(field.strip())
+                    filter_contains.remove(field.value)
                 except ValueError:
                     continue
             # match if all `contains` values found
@@ -120,10 +119,6 @@ class Deck():
             yield card
 
     def find_one(self, filter=None):
-        # try:
-        #     return next(self.find(filter))
-        # except StopIteration:
-        #     return None
         filter = self._normalize_filter(filter)
         _, card = self._enumerate_find_one(filter)
         return card
@@ -132,6 +127,15 @@ class Deck():
         filter = self._normalize_filter(filter)
         for i, _ in self._enumerate_find(filter):
             self._cards[i] = card
+
+    def replace_one(self, filter, card):
+        filter = self._normalize_filter(filter)
+        i, _ = self._enumerate_find_one(filter)
+        if i:
+            self._cards[i] = card
+            return card
+        else:
+            return None
             
     def _update_card(self, card, update):
         for index, value in self._iter_index_value(update):
@@ -147,6 +151,7 @@ class Deck():
         delete_i = [i for i, _ in self._enumerate_find(filter)]
         for i in reversed(delete_i):
             del self._cards[i]
+        return len(delete_i)
             
     def _get_card_by_index(self, index):
         return self._cards[index]
