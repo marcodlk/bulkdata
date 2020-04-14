@@ -2,7 +2,7 @@
 
 __author__ = """Marco T. de Lannoy Kobayashi"""
 __email__ = 'mdlkdev@gmail.com'
-__version__ = '0.4.2'
+__version__ = '0.5.0'
 
 
 from .deck import Deck
