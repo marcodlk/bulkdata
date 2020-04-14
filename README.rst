@@ -50,6 +50,8 @@ Features
 Example
 -------
 
+This a quick example of using the ``bulkdata`` package to update a BDF file.
+
 .. code-block:: python
 
     from bulkdata import Deck, Card
@@ -123,6 +125,10 @@ Output::
    AEROZ   1       YES     NO      N       M       400.    300     12000.  +0      
    +0      10.     0.      0.
 
+For a more detailed overview check out the 
+`documentation <https://bulkdata.readthedocs.io>`_ and/or the 
+`bulkdata-usage <https://github.com/marcodlk/bulkdata/blob/master/examples/bulkdata-usage.ipynb>`_
+notebook.
 
 TODO
 ----
