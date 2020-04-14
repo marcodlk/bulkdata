@@ -295,6 +295,16 @@ class Deck():
         return list(self._cards[slice_])
             
     def __getitem__(self, key):
+        """Get card(s) in the deck.
+
+        :type key: int, slice, list, str
+        :param key: The indexing key denoting where to get 
+                    the card(s)
+        :return: The card(s)
+
+        If *key* is of type ``str``, this method
+        returns all cards with name *key*.
+        """
         if isinstance(key, int):
             return self._get_card_by_index(key)
         elif isinstance(key, slice):
@@ -319,6 +329,13 @@ class Deck():
             self._cards[i] = card
             
     def __setitem__(self, key, value):
+        """Set card(s) in the deck.
+
+        :type key: int, slice, list
+        :param key: The indexing key denoting where to set 
+                    the card(s)
+        :param value: The card(s) to set
+        """
         if isinstance(key, int):
             return self._set_card_by_index(key, value)
         elif isinstance(key, slice):
@@ -385,15 +402,27 @@ class Deck():
         return fp.write(self.dumps(format=format))
 
     def __str__(self):
+        """Dump the deck to as a bulk data string with default
+        format
+        
+        :return: The bulk data string
+        """
         return self.dumps()
 
     def __len__(self):
+        """Return number of cards in the deck.
+        """
         return self.cards.__len__()
 
     def __iter__(self):
+        """Iterate through the cards in the deck.
+        """
         return self.cards.__iter__()
 
     def __bool__(self):
+        """Return ``True`` if the deck contains any cards,
+        ``False`` otherwise.
+        """ 
         return bool(self.cards)
 
     def __repr__(self):

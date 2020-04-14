@@ -158,9 +158,10 @@ class Card:
     def __setitem__(self, key, value):
         """Set field item into the card.
 
-        :param key: The indexing object denoting where to set 
+        :type key: int, slice, list
+        :param key: The indexing key denoting where to set 
                     the field(s)
-        :param value: The field value(s) to set.
+        :param value: The field value(s) to set
         """
         if isinstance(key, int):
             self._setsinglefield(key, value)
@@ -185,7 +186,8 @@ class Card:
     def __getitem__(self, key):
         """Get field item from the card.
 
-        :param key: The indexing object denoting which field(s) to get
+        :type key: int, slice, list
+        :param key: The indexing key denoting which field(s) to get
         :return: The field value(s)
         """
         if isinstance(key, int):
@@ -219,7 +221,8 @@ class Card:
     def __delitem__(self, key):
         """Delete the field item from card.
         
-        :param key: The indexing object denoting which field(s)
+        :type key: int, slice
+        :param key: The indexing key denoting which field(s)
                     to delete
         """
         self._fields.__delitem__(key)
@@ -253,18 +256,35 @@ class Card:
         return [field.value for field in self._fields]
     
     def __contains__(self, value):
+        """Return ``True`` if the card contains a field
+        with the specified value, ``False`` otherwise.
+
+        :param value: The specified value
+        """
         return self._fields.__contains__(value)
     
     def __str__(self):
+        """Dump the card to as a bulk data card string
+        with default format.
+        
+        :return: The bulk data card string
+        """
         return self.dumps()
 
     def __len__(self):
+        """Return number of fields in the card.
+        """
         return self.fields.__len__()
 
     def __iter__(self):
+        """Iterate through the fields in the card.
+        """
         return self.fields.__iter__()
 
     def __bool__(self):
+        """Return ``True`` if the card contains any fields,
+        ``False`` otherwise.
+        """ 
         return bool(self.fields)
 
     def __repr__(self):

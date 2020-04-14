@@ -17,6 +17,7 @@ bulkdata.card
 .. automodule:: bulkdata.card
     :members:
     :undoc-members:
+    :special-members: __getitem__, __setitem__, __delitem__, __str__, __len__, __iter__, __bool__
 
 bulkdata.cli
 ------------
@@ -31,6 +32,7 @@ bulkdata.deck
 .. automodule:: bulkdata.deck
     :members:
     :undoc-members:
+    :special-members: __getitem__, __setitem__, __str__, __len__, __iter__, __bool__
 
 bulkdata.error
 --------------
