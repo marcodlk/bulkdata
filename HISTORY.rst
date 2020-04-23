@@ -19,3 +19,13 @@ History
     - API
         * Card class
         * Deck class
+
+
+0.6.0 (2020-04-23)
+------------------
+
+* Sorting deck cards is now possible with `Deck.sort` method.
+
+* Dumping cards containing trailing blank fields no longer 
+  creates blank continuation lines, as trailing blank fields
+  are ignored when converting card to string.
