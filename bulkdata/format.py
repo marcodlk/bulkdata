@@ -31,6 +31,15 @@ class BaseFormatter:
         else:
             return False
 
+    def remove_trailing_blanks(self, fields):
+        fields = list(fields)
+        for i in reversed(range(len(fields))):
+            if not fields[i]:
+                del fields[i]
+            else:
+                break
+        return fields
+
     def format_card(self, card):
         
         card_str = ""
@@ -51,7 +60,8 @@ class BaseFormatter:
                 line_pos = 0
                 line_count += 1
 
-        fields = card.fields
+        fields = self.remove_trailing_blanks(card.fields)
+        print(fields)
         card_str += self.format_field(card.name or " ")
 
         if len(fields) > 0:

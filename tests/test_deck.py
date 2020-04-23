@@ -216,6 +216,39 @@ def test_deck_load_bdf_pyNastran():
         assert deck.dumps("free") == f.read()
 
 
+def test_deck_sort_by_name(cards):
+
+    deck = Deck(cards)
+    deck.sort()
+
+    for i in range(len(deck)-1):
+        c1 = deck[i]
+        c2 = deck[i+1]
+        assert c1.name < c2.name
+
+
+def test_deck_sort_by_name_reverse(cards):
+
+    deck = Deck(cards)
+    deck.sort(reverse=True)
+
+    for i in range(len(deck)-1):
+        c1 = deck[i]
+        c2 = deck[i+1]
+        assert c1.name > c2.name
+
+
+def test_deck_sort_by_first_val(cards):
+
+    deck = Deck(cards)
+    deck.sort(key=lambda card: card[0])
+    
+    for i in range(len(deck)-1):
+        c1 = deck[i]
+        c2 = deck[i+1]
+        assert c1[0] < c2[0]
+
+
 def test_zaero_example():
 
     bdf_filename = BDF_DIR + "/zaero-example.bdf"

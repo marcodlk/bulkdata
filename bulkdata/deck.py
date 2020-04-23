@@ -350,7 +350,7 @@ class Deck():
         """Load :class:`~bulkdata.deck.Deck` object from a
         bulk data string.
 
-        :param deck_str: the bulk data string
+        :param deck_str: The bulk data string
         :return: The loaded :class:`~bulkdata.deck.Deck` object
         """
         cards = []
@@ -374,7 +374,7 @@ class Deck():
         """Load :class:`~bulkdata.deck.Deck` object from a
         bulk data file object.
 
-        :param fp: the bulk data file object
+        :param fp: The bulk data file object
         :return: The loaded :class:`~bulkdata.deck.Deck` object
         """
         return cls.loads(fp.read())
@@ -382,7 +382,7 @@ class Deck():
     def dumps(self, format="fixed"):
         """Dump the deck to a bulk data string.
 
-        :param format: the desired format, can be one of: 
+        :param format: The desired format, can be one of: 
                        ["free", "fixed"], defaults to "fixed"
         :return: The bulk data string
         """
@@ -395,11 +395,23 @@ class Deck():
     def dump(self, fp, format="fixed"):
         """Dump the deck to a bulk data file.
 
-        :param fp: the bulk data file object
-        :param format: the desired format, can be one of: 
+        :param fp: The bulk data file object
+        :param format: The desired format, can be one of: 
                        ["free", "fixed"], defaults to "fixed"
         """
         return fp.write(self.dumps(format=format))
+
+    def sort(self, key=None, reverse=False):
+        """Sort the cards in the deck.
+        
+        :param key: Specifies a function of one argument that
+                    is used to extract a comparison key from each card.
+                    If None, the cards will be sorted by name.
+        :param reverse: Boolean value. If set to True, then the cards 
+                        are sorted as if each comparison were reversed.
+        """
+        key = key or (lambda card: card.name)
+        self._cards = sorted(self._cards, key=key, reverse=reverse)
 
     def __str__(self):
         """Dump the deck to as a bulk data string with default

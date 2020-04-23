@@ -34,8 +34,7 @@ def test_card_blank():
     assert len(card.fields) == size
     # format object strips trailing blank fields during write
     expect = """\
-BLANK                                                                   +0      
-+0
+BLANK
 """
     assert card.dumps() == expect
 
@@ -57,7 +56,6 @@ def test_card_strip():
     card = Card("STRIP", size=8)
     card[4] = "stophere"
     card.strip()
-    print(card.dumps())
     expect = """\
 STRIP                                   stophere
 """
@@ -334,6 +332,18 @@ def test_card_set_incomplete_overwrite():
 OVERWRT 0       1       2       3       4       5       6               +0      
 +0      shorter                                                         +1      
 +1      done
+"""
+    # print(card.dumps("fixed"))
+    assert card.dumps("fixed") == card_str
+
+
+def test_card_dumps_trailing_blanks():
+
+    card = Card("MAT1", size=17)
+    card[:4] = [1, 100000., 0.3, 7800.]
+
+    card_str = """\
+MAT1    1       100000. .3      7800.
 """
     print(card.dumps("fixed"))
     assert card.dumps("fixed") == card_str

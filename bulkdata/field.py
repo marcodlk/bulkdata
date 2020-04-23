@@ -92,6 +92,9 @@ class Field:
     @property
     def width(self):
         return self.span * 8
+
+    def is_blank(self):
+        return not self.raw.strip()
     
     def __eq__(self, other):
         if isinstance(other, Field):
@@ -108,7 +111,7 @@ class Field:
         return "{}('{}')".format(self.__class__.__name__, self.raw)
 
     def __bool__(self):
-        return bool(self.raw)
+        return not self.is_blank()
     
     @property
     def value(self):

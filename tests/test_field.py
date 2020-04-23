@@ -216,3 +216,10 @@ def test_write_string_largefield():
 
     for value, fieldspan in test_tuples:
         assert write_field(value, fieldspan) == value
+
+
+def test_blank_field():
+
+    field = Field("        ")
+    assert field.is_blank()
+    assert not field

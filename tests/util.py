@@ -1,10 +1,10 @@
-
+from bulkdata.field import Field
 
 class MockCard():
 
     def __init__(self, name, fields):
         self._name = name
-        self._fields = fields
+        self._fields = [Field(val) for val in fields]
 
     @property
     def name(self):

@@ -73,3 +73,12 @@ def test_write_empty_card(fixedform, freeform):
         actual = formatter.format_card(card)
         expect = "\n"
         assert actual == expect
+
+
+def test_write_trailing_blanks(fixedform):
+
+    card = MockCard("BLANKS", ["        "] * 9)
+
+    actual = fixedform.format_card(card)
+    expect = "BLANKS\n"
+    assert actual == expect
