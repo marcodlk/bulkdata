@@ -61,7 +61,6 @@ class BaseFormatter:
                 line_count += 1
 
         fields = self.remove_trailing_blanks(card.fields)
-        print(fields)
         card_str += self.format_field(card.name or " ")
 
         if len(fields) > 0:
