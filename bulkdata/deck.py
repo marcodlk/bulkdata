@@ -401,17 +401,20 @@ class Deck():
         """
         return fp.write(self.dumps(format=format))
 
-    def sort(self, key=None, reverse=False):
-        """Sort the cards in the deck.
+    def sorted(self, key=None, reverse=False):
+        """Return a deck containing the sorted deck cards.
         
         :param key: Specifies a function of one argument that
                     is used to extract a comparison key from each card.
                     If None, the cards will be sorted by name.
         :param reverse: Boolean value. If set to True, then the cards 
                         are sorted as if each comparison were reversed.
+        :return: The :class:`~bulkdata.deck.Deck` object containing the
+                 sorted cards.
         """
         key = key or (lambda card: card.name)
-        self._cards = sorted(self._cards, key=key, reverse=reverse)
+        cards = sorted(self._cards, key=key, reverse=reverse)
+        return Deck(cards, header=self.header)
 
     def __str__(self):
         """Dump the deck to as a bulk data string with default

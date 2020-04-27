@@ -219,34 +219,52 @@ def test_deck_load_bdf_pyNastran():
 def test_deck_sort_by_name(cards):
 
     deck = Deck(cards)
-    deck.sort()
+    deck_sort = deck.sorted()
 
-    for i in range(len(deck)-1):
-        c1 = deck[i]
-        c2 = deck[i+1]
+    for i in range(len(deck_sort)-1):
+        c1 = deck_sort[i]
+        c2 = deck_sort[i+1]
         assert c1.name < c2.name
+
+    # modifying sorted deck has no effect on original deck
+    deck_sort.delete()
+
+    assert len(deck) == len(cards)
+    assert len(deck_sort) == 0
 
 
 def test_deck_sort_by_name_reverse(cards):
 
     deck = Deck(cards)
-    deck.sort(reverse=True)
+    deck_sort = deck.sorted(reverse=True)
 
     for i in range(len(deck)-1):
-        c1 = deck[i]
-        c2 = deck[i+1]
+        c1 = deck_sort[i]
+        c2 = deck_sort[i+1]
         assert c1.name > c2.name
+
+    # modifying sorted deck has no effect on original deck
+    deck_sort.delete()
+
+    assert len(deck) == len(cards)
+    assert len(deck_sort) == 0
 
 
 def test_deck_sort_by_first_val(cards):
 
     deck = Deck(cards)
-    deck.sort(key=lambda card: card[0])
+    deck_sort = deck.sorted(key=lambda card: card[0])
     
     for i in range(len(deck)-1):
-        c1 = deck[i]
-        c2 = deck[i+1]
+        c1 = deck_sort[i]
+        c2 = deck_sort[i+1]
         assert c1[0] < c2[0]
+
+    # modifying sorted deck has no effect on original deck
+    deck_sort.delete()
+
+    assert len(deck) == len(cards)
+    assert len(deck_sort) == 0
 
 
 def test_zaero_example():

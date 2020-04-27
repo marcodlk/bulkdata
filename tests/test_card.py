@@ -333,7 +333,6 @@ OVERWRT 0       1       2       3       4       5       6               +0
 +0      shorter                                                         +1      
 +1      done
 """
-    # print(card.dumps("fixed"))
     assert card.dumps("fixed") == card_str
 
 
@@ -345,5 +344,4 @@ def test_card_dumps_trailing_blanks():
     card_str = """\
 MAT1    1       100000. .3      7800.
 """
-    print(card.dumps("fixed"))
     assert card.dumps("fixed") == card_str
