@@ -21,7 +21,7 @@ History
         * Deck class
 
 
-0.6.0 (2020-04-23)
+0.6.1 (2020-04-23)
 ------------------
 
 * Sorting deck cards is now possible with `Deck.sort` method.
